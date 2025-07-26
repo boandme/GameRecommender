@@ -56,6 +56,24 @@ ratings = {
         'GTA 5': 3,
         'Call of Duty': 3
     },
+    'ZG3': {
+        'Minecraft': 4,
+        'Terraria': 2,
+        'Super Mario 64': 3.5,
+        'GTA 5': 1,
+        'Call of Duty': 3
+    },
+    'Boandme': {
+
+    },
+    'Ruhaan': {
+        'Minecraft': 4,
+        'Terraria': 3.5,
+        'Super Mario 64': 3,
+        'GTA 5': 4,
+        'Call of Duty': 4
+    },
+
 }
 ### Libraries
 from math import sqrt
@@ -80,11 +98,11 @@ def sim_distance(prefs, person1, person2):
 
     return 1/(1+sqrt(sum_of_squares))
 
-print(f"The  similarity score between EnderKnight and Cychrone is  {sim_distance(ratings, 'EnderKnight', 'Cychrone')}")
+##print(f"The  similarity score between EnderKnight and Cychrone is  {sim_distance(ratings, 'EnderKnight', 'Cychrone')}")
 
 
 ### Sorting the reviews ####
-def topMatches(prefs, person, n=5, similarity=sim_distance):
+def topMatches(prefs, person, n=6, similarity=sim_distance):
     scores = []  
     for other in prefs:
         if other != person:
@@ -100,10 +118,10 @@ def topMatches(prefs, person, n=5, similarity=sim_distance):
  
 
 name = input("For who do you want to see the similarity leaderboard for VG preferences? ")
-if name in ratings:
-    topMatches(ratings, name)
-else: 
-    print("Invalid Input")
+##if name in ratings:
+##    topMatches(ratings, name)
+##else: 
+##    print("Invalid Input")
 
 
 
@@ -112,7 +130,43 @@ else:
 def getRecommendations(prefs, person, similarity = sim_distance):
     totals = {}
     simSums={}
+    for other in prefs:
+        ### Make sure don't compare to yourself 
+        if other==person: 
+            continue
+        sim = similarity(prefs, person, other)
+
+        if sim<=0:
+            continue
+        for item in prefs[other]:
+            if item not in prefs[person] or prefs[person][item]==0:
+                totals.setdefault(item,0)
+                totals[item] += prefs[other][item]*sim
+                ## Sum of similarities
+                simSums.setdefault(item, 0)
+                simSums[item] += sim
+
+            ### Creating the final list normalized(not ranked yet)
+            for item, total in totals.items():
+                rankings = [(total/simSums[item], item)]
+                
+            rankings.sort()
+            rankings.reverse()
+            print()
+            print("--------VG leaderboard(12 reviews) ---------------")
+            for i in range(0, len(rankings)):
+                print(f"{i}: {round(rankings[i], 3)}")   
+
+            return rankings
+        
+
+getRecommendations(ratings,'Boandme', similarity = sim_distance)
+        
+
+
+        
     
+
 
    
 
